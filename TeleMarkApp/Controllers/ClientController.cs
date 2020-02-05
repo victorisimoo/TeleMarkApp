@@ -8,6 +8,7 @@ using TeleMarkApp.Services;
 
 namespace TeleMarkApp.Controllers {
     public class ClientController : Controller {
+
         // GET: Client
         public ActionResult Index() {
             return View(Storage.Instance.ClientList);
@@ -46,16 +47,32 @@ namespace TeleMarkApp.Controllers {
 
         // GET: Client/Edit/5
         public ActionResult Edit(int id) {
-            return View();
+            try{
+                var Client = Storage.Instance.ClientList.Where(c => c.ClientId == id).FirstOrDefault();
+                return View(Client);
+            }catch{
+                return View();
+            }
         }
 
         // POST: Client/Edit/5
         [HttpPost]
         public ActionResult Edit(int id, FormCollection collection) {
             try {
-                // TODO: Add update logic here
+                Storage.Instance.ClientList.RemoveAll(c => c.ClientId == id);
+                var Client = new ClientModel {
+                    Name = collection["Name"],
+                    LastName = collection["LastName"],
+                    TelephoneNumber = collection["TelephoneNumber"],
+                    Description = collection["Description"]
+                };
 
-                return RedirectToAction("Index");
+                if (Client.SaveClient()){
+                    return RedirectToAction("Index");
+                }else{
+                    return View(Client);
+                }
+
             } catch {
                 return View();
             }
