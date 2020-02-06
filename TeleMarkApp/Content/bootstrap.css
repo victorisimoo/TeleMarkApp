@@ -247,6 +247,7 @@ th {
   .btn > .caret,
   .dropup > .btn > .caret {
     border-top-color: #000 !important;
+    color: white;
   }
   .label {
     border: 1px solid #000;
