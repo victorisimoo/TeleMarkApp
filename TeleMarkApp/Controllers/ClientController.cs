@@ -71,24 +71,40 @@ namespace TeleMarkApp.Controllers {
                 }
 
             } catch {
-                return View();
+                
+                    return View();
             }
         }
 
         // GET: Client/Delete/5
         public ActionResult Delete(int id) {
-            return View();
+            try{
+                var Client = Storage.Instance.ClientList.Where(c => c.ClientId == id).FirstOrDefault();
+                return View(Client);
+            }
+            catch{
+                return View();
+            }
         }
 
         // POST: Client/Delete/5
         [HttpPost]
         public ActionResult Delete(int id, FormCollection collection) {
-            try {
-                // TODO: Add delete logic here
+            var Client = new ClientModel();
+            try{
+                if (Client == null)
+                    return View("NotFound");
 
-                return RedirectToAction("Index");
-            }catch {
-                return View();
+                Storage.Instance.ClientList.RemoveAll(c => c.ClientId == id);
+                if (Client.UpdateClient()){
+                    return RedirectToAction("Index");
+                }
+                else{
+                    return View(Client);
+                }
+            }
+            catch{
+                return View(Client);
             }
         }
     }

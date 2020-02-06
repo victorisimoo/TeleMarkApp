@@ -1,0 +1,30 @@
+﻿@model TeleMarkApp.Models.ClientModel
+@{
+    ViewBag.Title = "Delete";
+}
+<h2>Delete Confirmation</h2>
+<br>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <br>
+    <div>
+        <h4 class="text-primary".text-primary>
+            Are you sure you want delete the client?
+            <br>
+        </h4>
+    </div>
+    <br>
+    <div class="form-group">
+        <div class="col-md-offset-3 col-md-10">
+            <input type="submit" value="Confirm" class="btn btn-info" />
+        </div>
+    </div>
+}
+
+<div class="text-info".text-info>
+    <br>
+    @Html.ActionLink("Back to list", "Index")
+</div>

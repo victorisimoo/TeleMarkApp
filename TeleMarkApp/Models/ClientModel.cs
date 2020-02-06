@@ -30,7 +30,6 @@ namespace TeleMarkApp.Models {
                 return false;
             }
         }
-
-
+        
     }
 }
