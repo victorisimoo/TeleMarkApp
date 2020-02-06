@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using TeleMarkApp.Models;
 using TeleMarkApp.Services;
@@ -7,8 +8,25 @@ namespace TeleMarkApp.Controllers {
     public class ClientController : Controller {
 
         // GET: Client
-        public ActionResult Index() {
-            return View(Storage.Instance.ClientList);
+        public ActionResult Index(string sortOrder) {
+            ViewBag.NameSortParam = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.LastNameSortParam = sortOrder == "Lastname" ? "lastname_desc" : "Lastname";
+            var clients = Storage.Instance.ClientList;
+            switch (sortOrder){
+                case "name_desc":
+                   clients = Storage.Instance.ClientList.OrderByDescending(X=>X.Name).ToList();
+                break;
+                case "Lastname":
+                   clients = Storage.Instance.ClientList.OrderBy(X => X.LastName).ToList();
+                break;
+                case "lastname_desc":
+                   clients = Storage.Instance.ClientList.OrderByDescending(X => X.LastName).ToList();
+                    break;
+                default:
+                    clients = Storage.Instance.ClientList.OrderBy(X => X.Name).ToList();
+                break;
+            }
+            return View(clients.ToList());
         }
 
         // GET: Client/Details/5
