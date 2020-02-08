@@ -40,79 +40,93 @@ namespace TeleMarkApp.Controllers {
         // GET: Client
         public ActionResult Index(string sortOrder)
         {
-            ViewBag.NameSortParam = string.IsNullOrEmpty(sortOrder) ? "name_asc" : "";
-            ViewBag.LastNameSortParam = string.IsNullOrEmpty(sortOrder) ? "lastname_asc" : "";
-            var clients = Storage.Instance.ClientList;
-
-            if (sortOrder == "name_asc")
+            try
             {
-                for (int i = 0; i < clients.Count - 1; i++)
-                {
-                    for (int j = 0; j < clients.Count - i - 1; j++)
-                    {
-                        if (Compare_Names(clients[j].Name, clients[j + 1].Name))
-                        {
-                            var aux = clients[j];
-                            clients[j] = clients[j + 1];
-                            clients[j + 1] = aux;
-                        }
-                    }
+                ViewBag.NameSortParam = string.IsNullOrEmpty(sortOrder) ? "name_asc" : "";
+                ViewBag.LastNameSortParam = string.IsNullOrEmpty(sortOrder) ? "lastname_asc" : "";
+                var clients = Storage.Instance.ClientList;
 
+                if (sortOrder == "name_asc")
+                {
+                    for (int i = 0; i < clients.Count - 1; i++)
+                    {
+                        for (int j = 0; j < clients.Count - i - 1; j++)
+                        {
+                            if (Compare_Names(clients[j].Name, clients[j + 1].Name) == 1)
+                            {
+                                var aux = clients[j];
+                                clients[j] = clients[j + 1];
+                                clients[j + 1] = aux;
+                            }
+                        }
+
+                    }
+                    Storage.Instance.ClientList = clients;
                 }
-                Storage.Instance.ClientList = clients;
+                else
+                {
+                    for (int i = 0; i < clients.Count - 1; i++)
+                    {
+                        for (int j = 0; j < clients.Count - i - 1; j++)
+                        {
+                            if (Compare_Names(clients[j].LastName, clients[j + 1].LastName) == 1)
+                            {
+                                var aux = clients[j];
+                                clients[j] = clients[j + 1];
+                                clients[j + 1] = aux;
+                            }
+                        }
+
+                    }
+                    Storage.Instance.ClientList = clients;
+                }
+                return View(clients.ToList());
             }
-            else
+            catch
             {
-                for (int i = 0; i < clients.Count - 1; i++)
-                {
-                    for (int j = 0; j < clients.Count - i - 1; j++)
-                    {
-                        if (Compare_Names(clients[j].LastName, clients[j + 1].LastName))
-                        {
-                            var aux = clients[j];
-                            clients[j] = clients[j + 1];
-                            clients[j + 1] = aux;
-                        }
-                    }
-
-                }
-                Storage.Instance.ClientList = clients;
+                return View();
             }
-            return View(clients.ToList());
         }
 
         //Method for compare names and lastnames on the ClientList
-        public bool Compare_Names(string name_1, string name_2)
+        public int Compare_Names(string name_1, string name_2)
         {
-            int size = 0;
-            if (name_1.Length > name_2.Length)
+            try
             {
-                size = name_1.Length;
-            }
-            else
-            {
-                size = name_2.Length;
-            }
-
-            for (int k = 0; k < size; k++)
-            {
-                if (k < name_1.Length && k < name_2.Length)
+                int size = 0;
+                if (name_1.Length > name_2.Length)
                 {
-                    if (name_1[k].CompareTo(name_2[k]) < 0)
+                    size = name_1.Length;
+                }
+                else
+                {
+                    size = name_2.Length;
+                }
+
+                for (int k = 0; k < size; k++)
+                {
+                    if (k < name_1.Length && k < name_2.Length)
                     {
-                        return false;
-                    }
-                    else if (name_1[k].CompareTo(name_2[k]) == 0)
-                    {
-                        return false;
-                    }
-                    else if (name_1[k].CompareTo(name_2[k]) > 0)
-                    {
-                        return true;
+                        if (name_1[k].CompareTo(name_2[k]) < 0)
+                        {
+                            return 0;
+                        }
+                        else if (name_1[k].CompareTo(name_2[k]) == 0)
+                        {
+                            return 0;
+                        }
+                        else if (name_1[k].CompareTo(name_2[k]) > 0)
+                        {
+                            return 1;
+                        }
                     }
                 }
+                return 0;
             }
-            return false;
+            catch
+            {
+                return 0;
+            }
         }
 
         // GET: Client/Edit/5
