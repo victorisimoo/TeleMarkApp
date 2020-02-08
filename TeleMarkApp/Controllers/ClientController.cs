@@ -7,28 +7,6 @@ using TeleMarkApp.Services;
 namespace TeleMarkApp.Controllers {
     public class ClientController : Controller {
 
-        // GET: Client
-        public ActionResult Index(string sortOrder) {
-            ViewBag.NameSortParam = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewBag.LastNameSortParam = sortOrder == "Lastname" ? "lastname_desc" : "Lastname";
-            var clients = Storage.Instance.ClientList;
-            switch (sortOrder){
-                case "name_desc":
-                   clients = Storage.Instance.ClientList.OrderByDescending(X=>X.Name).ToList();
-                break;
-                case "Lastname":
-                   clients = Storage.Instance.ClientList.OrderBy(X => X.LastName).ToList();
-                break;
-                case "lastname_desc":
-                   clients = Storage.Instance.ClientList.OrderByDescending(X => X.LastName).ToList();
-                    break;
-                default:
-                    clients = Storage.Instance.ClientList.OrderBy(X => X.Name).ToList();
-                break;
-            }
-            return View(clients.ToList());
-        }
-
         // GET: Client/Details/5
         public ActionResult Details(int id) {
             return View();
@@ -58,6 +36,83 @@ namespace TeleMarkApp.Controllers {
             } catch {
                 return View();
             }
+        }
+        // GET: Client
+        public ActionResult Index(string sortOrder)
+        {
+            ViewBag.NameSortParam = string.IsNullOrEmpty(sortOrder) ? "name_asc" : "";
+            ViewBag.LastNameSortParam = string.IsNullOrEmpty(sortOrder) ? "lastname_asc" : "";
+            var clients = Storage.Instance.ClientList;
+
+            if (sortOrder == "name_asc")
+            {
+                for (int i = 0; i < clients.Count - 1; i++)
+                {
+                    for (int j = 0; j < clients.Count - i - 1; j++)
+                    {
+                        if (Compare_Names(clients[j].Name, clients[j + 1].Name))
+                        {
+                            var aux = clients[j];
+                            clients[j] = clients[j + 1];
+                            clients[j + 1] = aux;
+                        }
+                    }
+
+                }
+                Storage.Instance.ClientList = clients;
+            }
+            else
+            {
+                for (int i = 0; i < clients.Count - 1; i++)
+                {
+                    for (int j = 0; j < clients.Count - i - 1; j++)
+                    {
+                        if (Compare_Names(clients[j].LastName, clients[j + 1].LastName))
+                        {
+                            var aux = clients[j];
+                            clients[j] = clients[j + 1];
+                            clients[j + 1] = aux;
+                        }
+                    }
+
+                }
+                Storage.Instance.ClientList = clients;
+            }
+            return View(clients.ToList());
+        }
+
+        //Method for compare names and lastnames on the ClientList
+        public bool Compare_Names(string name_1, string name_2)
+        {
+            int size = 0;
+            if (name_1.Length > name_2.Length)
+            {
+                size = name_1.Length;
+            }
+            else
+            {
+                size = name_2.Length;
+            }
+
+            for (int k = 0; k < size; k++)
+            {
+                if (k < name_1.Length && k < name_2.Length)
+                {
+                    if (name_1[k].CompareTo(name_2[k]) < 0)
+                    {
+                        return false;
+                    }
+                    else if (name_1[k].CompareTo(name_2[k]) == 0)
+                    {
+                        return false;
+                    }
+                    else if (name_1[k].CompareTo(name_2[k]) > 0)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         // GET: Client/Edit/5
